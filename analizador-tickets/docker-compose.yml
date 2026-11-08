@@ -1,0 +1,89 @@
+
+# Levanta toda la infraestructura con un solo comando: docker compose up -d
+services:
+  # ==========================================
+  # N8N - AUTOMATIZACIÓN DE TICKETS
+  # ==========================================
+  # Aca vive el workflow que hace el RAG (embeddings + busqueda en Qdrant + LLM)
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: tickets-n8n
+    restart: unless-stopped        # se reinicia solo si se cae (salvo que yo lo pare)
+    ports:
+      - "5678:5678"                # puerto de n8n: http://localhost:5678
+    environment:
+      - GENERIC_TIMEZONE=America/Bogota   # zona horaria para los horarios de n8n
+      - TZ=America/Bogota
+      - NODE_ENV=production
+      # Estas variables le dicen a n8n cual es su direccion publica (el dominio de ngrok),
+      # asi genera bien las URLs de los webhooks
+      - N8N_HOST=germinate-had-heroism.ngrok-free.dev
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - N8N_EDITOR_BASE_URL=https://germinate-had-heroism.ngrok-free.dev/
+      - WEBHOOK_URL=https://germinate-had-heroism.ngrok-free.dev/
+      - N8N_PROXY_HOPS=1           # n8n esta detras de 1 proxy (ngrok)
+    volumes:
+      - n8n_data:/home/node/.n8n   # guarda workflows y credenciales aunque se apague el contenedor
+    extra_hosts:
+      # Permite que n8n (dentro de Docker) llegue a servicios de mi PC con "host.docker.internal"
+      # (por ahi se conecta a Qdrant en el workflow)
+      - "host.docker.internal:host-gateway"
+
+  # ==========================================
+  # NGROK - ACCESO PUBLICO A N8N
+  # ==========================================
+  # Crea un tunel para que n8n sea accesible desde internet con un dominio fijo
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: tickets-ngrok
+    restart: unless-stopped
+    environment:
+      # El token sale de tu cuenta de ngrok y va en el .env. Si falta, docker compose se detiene con ese mensaje
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:? NGROK_AUTHTOKEN en .env}
+    command:
+      - http
+      - n8n:5678                   # apunta al contenedor de n8n
+      - --domain=germinate-had-heroism.ngrok-free.dev
+    depends_on:
+      - n8n                        # arranca despues de n8n
+
+  # ==========================================
+  # QDRANT - BASE DE DATOS VECTORIAL
+  # ==========================================
+  # Guarda los tickets historicos como vectores (embeddings) para buscar los mas parecidos
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: tickets-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"                # API de Qdrant: http://localhost:6333
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  # ==========================================
+  # POSTGRESQL - HISTORIAL DE TICKETS
+  # ==========================================
+  # Aca Spring Boot guarda cada analisis que se hace
+  postgres:
+    image: postgres:16
+    container_name: tickets-postgres
+    restart: unless-stopped
+    environment:
+      # ${VARIABLE:-valor} = usa la variable del .env y, si no existe, el valor por defecto
+      POSTGRES_DB: ${DB_NAME:-tickets}
+      POSTGRES_USER: ${DB_USER:-tickets}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-tickets}
+    ports:
+      - "5433:5432"                # afuera 5433, adentro 5432 (el que usa application.properties)
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+# ==========================================
+# VOLÚMENES PERSISTENTES
+# ==========================================
+# Carpetas que Docker guarda para que no se pierdan los datos al reiniciar
+volumes:
+  n8n_data:
+  qdrant_data:
+  pg_data:

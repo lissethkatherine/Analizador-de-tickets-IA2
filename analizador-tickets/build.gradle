@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    // Plugin de Spring Boot: permite arrancar con "bootRun" y empaquetar la app
+    id 'org.springframework.boot' version '3.3.5'
+    // Maneja las versiones de las dependencias de Spring por mi (por eso abajo no pongo numeros)
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.ejemplo'
+version = '1.0.0'
+description = 'Clasificador y priorizador de tickets de soporte con RAG (n8n + Spring Boot)'
+
+// El proyecto usa Java 21
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
+// De donde descarga las librerias
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    // Lombok necesita estar tambien en el classpath de compilacion
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    // API REST + servidor web + RestClient para llamar a n8n
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Acceso a la base de datos relacional (historial de analisis)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Validacion de la entrada (@NotBlank, @Size)
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Driver para conectarse a PostgreSQL (solo se necesita al ejecutar, no al compilar)
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Reduce codigo repetitivo (getters y setters) en las entidades
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Librerias para pruebas (JUnit, etc.)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// Le dice a Gradle que use JUnit 5 para correr los tests
+tasks.named('test') {
+    useJUnitPlatform()
+}

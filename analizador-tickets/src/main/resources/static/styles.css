@@ -1,0 +1,145 @@
+/* Reset: quito margenes por defecto y hago que el padding no agrande las cajas */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Fondo oscuro y letra clara para toda la pagina */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+/* Caja central: ancho maximo 950px y centrada (margin: auto) */
+.container { width: 90%; max-width: 950px; margin: auto; padding: 50px 20px 80px; }
+
+/* Titulo de arriba */
+header { text-align: center; margin-bottom: 40px; }
+h1 { font-size: 40px; margin-bottom: 14px; }
+header p { color: #94a3b8; font-size: 17px; max-width: 620px; margin: 0 auto; }
+h2 { font-size: 20px; }
+
+/* ---------- Formulario ---------- */
+.buscador {
+    background: #1e293b;
+    padding: 28px 30px;
+    border-radius: 15px;
+    border: 1px solid #263449;
+}
+.buscador label { display: block; margin-bottom: 12px; font-weight: bold; font-size: 14px; }
+
+/* Cuadro de texto donde se escribe el ticket */
+textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    background: #0f172a;
+    color: white;
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+}
+/* Borde celeste cuando se navega con teclado (accesibilidad) */
+textarea:focus-visible { outline: 2px solid #06b6d4; outline-offset: 1px; }
+
+/* Fila con el texto de ayuda a la izquierda y el boton a la derecha */
+.fila-acciones {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; margin-top: 12px;
+}
+.ayuda { font-size: 13px; color: #94a3b8; }
+
+/* Boton principal azul; se pone opaco mientras esta deshabilitado (cargando) */
+#btnAnalizar {
+    padding: 12px 24px; border: none; border-radius: 8px;
+    background: #2563eb; color: white; font-size: 15px; font-weight: bold; cursor: pointer;
+}
+#btnAnalizar:hover { background: #1d4ed8; }
+#btnAnalizar:disabled { opacity: .6; cursor: wait; }
+#btnAnalizar:focus-visible, .ejemplo:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
+
+/* Botoncitos de ejemplo (forma de pastilla) */
+.ejemplos {
+    margin-top: 16px; color: #94a3b8; font-size: 13px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+}
+.ejemplo {
+    background: #334155; color: #cbd5e1; border: none;
+    padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+}
+.ejemplo:hover { background: #3f4e66; }
+
+/* Mensaje de carga; .oculto lo esconde (app.js le agrega/quita esta clase) */
+.cargando { text-align: center; padding: 30px; color: #22d3ee; }
+.oculto { display: none; }
+
+/* ---------- Resultado ---------- */
+.resultado { margin-top: 36px; }
+
+/* Las tres cajas comparten el mismo estilo base; despues cambia solo el color del borde.
+   aviso = amarillo (sin casos), error = rojo */
+.tarjeta-analisis, .aviso, .error {
+    background: #1e293b; border: 1px solid #263449; border-radius: 12px; padding: 22px 24px;
+}
+.error { border-color: #7f1d1d; color: #fecaca; }
+.aviso { border-color: #854d0e; color: #fde68a; }
+
+.etiqueta { color: #22d3ee; font-size: 13px; font-weight: bold; margin-bottom: 14px; }
+
+/* Cuadricula responsive: las columnas se acomodan solas segun el ancho */
+.datos {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px; margin-bottom: 18px;
+}
+.dato small { display: block; color: #94a3b8; font-size: 12px; margin-bottom: 2px; }
+.dato strong { font-size: 17px; }
+
+/* Etiquetas de prioridad con color: alta (rojo), media (amarillo), baja (verde) */
+.badge {
+    display: inline-block; padding: 2px 12px; border-radius: 20px;
+    font-size: 14px; font-weight: bold; text-transform: capitalize;
+}
+.badge.alta { background: rgba(239, 68, 68, .2); color: #fca5a5; }
+.badge.media { background: rgba(245, 158, 11, .2); color: #fcd34d; }
+.badge.baja { background: rgba(34, 197, 94, .2); color: #86efac; }
+
+/* Barra de confianza: .barra es el fondo y .progreso es la parte que se llena */
+.barra { width: 100%; height: 8px; background: #334155; border-radius: 10px; overflow: hidden; margin-top: 6px; }
+.progreso { height: 100%; background: linear-gradient(90deg, #2563eb, #06b6d4); }
+
+.justificacion { color: #e2e8f0; font-size: 15px; }
+
+.subtitulo { margin: 34px 0 6px; }
+.subtitulo span { display: block; color: #94a3b8; font-size: 14px; }
+
+/* Tarjeta de cada ticket historico parecido; borde azul si el modelo lo uso (.citado) */
+.similar {
+    background: #1e293b; border: 1px solid #263449; border-radius: 12px;
+    padding: 16px 20px; margin-top: 12px;
+}
+.similar.citado { border-color: #2563eb; }
+.similar .cabecera { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.similar .texto { font-size: 15px; }
+.similar .porcentaje { color: #22d3ee; font-weight: bold; white-space: nowrap; }
+.similar .meta { color: #94a3b8; font-size: 13px; margin: 6px 0; }
+.cita {
+    display: inline-block; background: rgba(37, 99, 235, .25); color: #93c5fd;
+    border-radius: 6px; padding: 0 8px; font-size: 12px; font-weight: bold; margin-left: 6px;
+}
+
+/* ---------- Historial ---------- */
+.historial { margin-top: 50px; }
+.fila-historial {
+    background: #1e293b; border: 1px solid #263449; border-radius: 10px;
+    padding: 12px 16px; margin-top: 10px; font-size: 14px;
+}
+.fila-historial .meta { color: #94a3b8; font-size: 12px; margin-bottom: 4px; }
+.vacio { color: #94a3b8; font-size: 14px; margin-top: 10px; }
+
+/* Ajustes para pantallas chicas (celular) */
+@media (max-width: 600px) {
+    h1 { font-size: 28px; }
+    .buscador { padding: 22px 18px; }
+    .fila-acciones { flex-direction: column; align-items: stretch; }
+}

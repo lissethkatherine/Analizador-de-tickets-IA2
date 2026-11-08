@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Para que se vea bien en el celular -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analizador de tickets de soporte</title>
+    <!-- Estilos de la pagina -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+
+    <!-- Titulo y explicacion corta de que hace la app -->
+    <header>
+        <h1>🎫 Analizador de tickets de soporte</h1>
+        <p>
+            Pega el reclamo de un cliente. El sistema busca casos históricos
+            parecidos y predice la categoría, la prioridad, el área responsable
+            y el tiempo estimado de resolución.
+        </p>
+    </header>
+
+    <main>
+        <!-- Formulario: aca el usuario escribe el ticket -->
+        <section class="buscador">
+            <label for="texto">Texto del ticket</label>
+            <!-- maxlength=2000 es el mismo limite que valida el backend -->
+            <textarea id="texto" rows="4" maxlength="2000"
+                placeholder="Ej: Me cobraron dos veces el pedido 4521 y todavía no me llega el producto."></textarea>
+
+            <div class="fila-acciones">
+                <span class="ayuda">Entre 10 y 2000 caracteres.</span>
+                <button id="btnAnalizar" type="button">Analizar ticket</button>
+            </div>
+
+            <!-- Botones con ejemplos listos para probar rapido. El texto va en data-texto
+                 y app.js lo lee para llenar el textarea -->
+            <div class="ejemplos">
+                <span>Prueba:</span>
+                <button class="ejemplo" type="button" data-texto="Me cobraron dos veces el pedido 4521 y necesito el reembolso hoy.">Cobro duplicado</button>
+                <button class="ejemplo" type="button" data-texto="No puedo entrar a mi cuenta, dice que mi contraseña es incorrecta.">Acceso a la cuenta</button>
+                <button class="ejemplo" type="button" data-texto="Veo compras en mi tarjeta que yo no hice, creo que me robaron los datos.">Posible fraude</button>
+                <button class="ejemplo" type="button" data-texto="¿Cuál es la capital de Francia?">Sin relación</button>
+            </div>
+        </section>
+
+        <!-- Mensaje de "cargando". Empieza oculto (clase "oculto") y app.js lo muestra mientras espera -->
+        <div id="cargando" class="cargando oculto" role="status">
+            Buscando casos similares y analizando el ticket…
+        </div>
+
+        <!-- Aca app.js pinta el resultado (o el error). aria-live avisa a lectores de pantalla cuando cambia -->
+        <section id="resultado" class="resultado" aria-live="polite"></section>
+
+        <!-- Lista de los ultimos analisis (viene de GET /historial) -->
+        <section class="historial">
+            <h2>Historial de análisis</h2>
+            <div id="historial"></div>
+        </section>
+    </main>
+
+</div>
+
+<!-- Al final del body para que el HTML ya exista cuando corra el JavaScript -->
+<script src="app.js"></script>
+</body>
+</html>
