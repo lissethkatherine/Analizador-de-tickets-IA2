@@ -263,6 +263,5 @@ Analizador-de-tickets-de-soporte/
 
 ---
 
-## 📚 Qué aprendí
-
-Este proyecto me sirvió para practicar la arquitectura en capas de Spring Boot (controller → service → repository), el consumo de APIs externas con `RestClient`, la validación de datos, el manejo centralizado de errores y cómo funciona un sistema RAG de punta a punta.
+## Teabajo realizado por:
+Lisseth Zapata
